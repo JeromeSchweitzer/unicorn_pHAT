@@ -1,263 +1,222 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
+import sys
 from time import sleep
 import unicornhat as uh
 
 
-L=(255,100,255) # RGB values for a lit pixel
-O=(0,0,0)       # RGB values for an off pixel in a char
-B=(0,0,0)       # RGB values for unlit pixels
+L=(255,100,255) # RGB values for lit character pixels
+H=(0,0,0)       # RGB values character highlights
+B=(0,0,0)       # RGB values for unlit (blank) pixels
 WIDTH,HEIGHT=uh.get_shape()
 CHAR_SPACING=2
-
 CHARS={
     '0': ([
         [L,L,L],
-        [L,O,L],
-        [L,O,L],
+        [L,H,L],
+        [L,H,L],
         [L,L,L]
-    ]),
-    '1': ([
-        [L,L,O],
-        [O,L,O],
-        [O,L,O],
+    ]), '1': ([
+        [L,L,H],
+        [H,L,H],
+        [H,L,H],
         [L,L,L]
-    ]),
-    '2': ([
-        [L,L,O],
-        [O,O,L],
-        [O,L,O],
+    ]), '2': ([
+        [L,L,H],
+        [H,H,L],
+        [H,L,H],
         [L,L,L]
-    ]),
-    '3': ([
+    ]), '3': ([
         [L,L,L],
-        [O,O,L],
-        [O,L,O],
-        [L,L,O]
-    ]),
-    '4': ([
-        [L,O,L],
+        [H,H,L],
+        [H,L,H],
+        [L,L,H]
+    ]), '4': ([
+        [L,H,L],
         [L,L,L],
-        [O,O,L],
-        [O,O,L]
-    ]),
-    '5': ([
+        [H,H,L],
+        [H,H,L]
+    ]), '5': ([
         [L,L,L],
-        [L,O,O],
-        [O,O,L],
+        [L,H,H],
+        [H,H,L],
         [L,L,L]
-    ]),
-    '6': ([
-        [L,O,O],
+    ]), '6': ([
+        [L,H,H],
         [L,L,L],
-        [L,O,L],
+        [L,H,L],
         [L,L,L]
-    ]),
-    '7': ([
+    ]), '7': ([
         [L,L,L],
-        [O,O,L],
-        [O,L,O],
-        [O,L,O]
-    ]),
-    '8': ([
+        [H,H,L],
+        [H,L,H],
+        [H,L,H]
+    ]), '8': ([
         [L,L,L],
-        [L,O,L],
+        [L,H,L],
         [L,L,L],
         [L,L,L]
-    ]),
-    '9': ([
+    ]), '9': ([
         [L,L,L],
-        [L,O,L],
+        [L,H,L],
         [L,L,L],
-        [O,O,L]
-    ]),
-    'A': ([
-        [O,L,O],
-        [L,O,L],
+        [H,H,L]
+    ]), 'A': ([
+        [H,L,H],
+        [L,H,L],
         [L,L,L],
-        [L,O,L]
-    ]),
-    'B': ([
-        [L,O,O],
+        [L,H,L]
+    ]), 'B': ([
+        [L,H,H],
         [L,L,L],
-        [L,O,L],
+        [L,H,L],
         [L,L,L]
-    ]),
-    'C': ([
-        [O,L,L],
-        [L,O,O],
-        [L,O,O],
-        [O,L,L]
-    ]),
-    'D': ([
-        [L,L,O],
-        [L,O,L],
-        [L,O,L],
-        [L,L,O]
-    ]),
-    'E': ([
+    ]), 'C': ([
+        [H,L,L],
+        [L,H,H],
+        [L,H,H],
+        [H,L,L]
+    ]), 'D': ([
+        [L,L,H],
+        [L,H,L],
+        [L,H,L],
+        [L,L,H]
+    ]), 'E': ([
         [L,L,L],
-        [L,L,O],
-        [L,O,O],
+        [L,L,H],
+        [L,H,H],
         [L,L,L]
-    ]),
-    'F': ([
+    ]), 'F': ([
         [L,L,L],
-        [L,L,O],
-        [L,O,O],
-        [L,O,O]
-    ]),
-    'G': ([
-        [O,L,L],
-        [L,O,O],
-        [L,O,L],
-        [O,L,L]
-    ]),
-    'H': ([
-        [L,O,L],
+        [L,L,H],
+        [L,H,H],
+        [L,H,H]
+    ]), 'G': ([
+        [H,L,L],
+        [L,H,H],
+        [L,H,L],
+        [H,L,L]
+    ]), 'H': ([
+        [L,H,L],
         [L,L,L],
-        [L,O,L],
-        [L,O,L]
-    ]),
-    'I': ([
+        [L,H,L],
+        [L,H,L]
+    ]), 'I': ([
         [L,L,L],
-        [O,L,O],
-        [O,L,O],
+        [H,L,H],
+        [H,L,H],
         [L,L,L]
-    ]),
-    'J': ([
+    ]), 'J': ([
         [L,L,L],
-        [O,L,O],
-        [O,L,O],
-        [L,O,O]
-    ]),
-    'K': ([
-        [L,O,L],
-        [L,L,O],
-        [L,O,L],
-        [L,O,L]
-    ]),
-    'L': ([
-        [L,O,O],
-        [L,O,O],
-        [L,O,O],
+        [H,L,H],
+        [H,L,H],
+        [L,H,H]
+    ]), 'K': ([
+        [L,H,L],
+        [L,L,H],
+        [L,H,L],
+        [L,H,L]
+    ]), 'L': ([
+        [L,H,H],
+        [L,H,H],
+        [L,H,H],
         [L,L,L]
-    ]),
-    'M': ([
+    ]), 'M': ([
         [L,L,L],
         [L,L,L],
-        [L,O,L],
-        [L,O,L]
-    ]),
-    'N': ([
-        [L,L,O],
-        [L,O,L],
-        [L,O,L],
-        [L,O,L]
-    ]),
-    'O': ([
-        [O,L,O],
-        [L,O,L],
-        [L,O,L],
-        [O,L,O]
-    ]),
-    'P': ([
+        [L,H,L],
+        [L,H,L]
+    ]), 'N': ([
+        [L,L,H],
+        [L,H,L],
+        [L,H,L],
+        [L,H,L]
+    ]), 'O': ([
+        [H,L,H],
+        [L,H,L],
+        [L,H,L],
+        [H,L,H]
+    ]), 'P': ([
         [L,L,L],
-        [L,O,L],
+        [L,H,L],
         [L,L,L],
-        [L,O,O]
-    ]),
-    'Q': ([
+        [L,H,H]
+    ]), 'Q': ([
         [L,L,L],
-        [L,O,L],
+        [L,H,L],
         [L,L,L],
-        [O,O,L]
-    ]),
-    'R': ([
+        [H,H,L]
+    ]), 'R': ([
         [L,L,L],
-        [L,O,L],
-        [L,L,O],
-        [L,O,L]
-    ]),
-    'S': ([
+        [L,H,L],
+        [L,L,H],
+        [L,H,L]
+    ]), 'S': ([
         [L,L,L],
-        [L,L,O],
-        [O,O,L],
+        [L,L,H],
+        [H,H,L],
         [L,L,L]
-    ]),
-    'T': ([
+    ]), 'T': ([
         [L,L,L],
-        [O,L,O],
-        [O,L,O],
-        [O,L,O]
-    ]),
-    'U': ([
-        [L,O,L],
-        [L,O,L],
-        [L,O,L],
+        [H,L,H],
+        [H,L,H],
+        [H,L,H]
+    ]), 'U': ([
+        [L,H,L],
+        [L,H,L],
+        [L,H,L],
         [L,L,L]
-    ]),
-    'V': ([
-        [L,O,L],
-        [L,O,L],
-        [L,O,L],
-        [O,L,O]
-    ]),
-    'W': ([
-        [L,O,L],
-        [L,O,L],
+    ]), 'V': ([
+        [L,H,L],
+        [L,H,L],
+        [L,H,L],
+        [H,L,H]
+    ]), 'W': ([
+        [L,H,L],
+        [L,H,L],
         [L,L,L],
         [L,L,L]
-    ]),
-    'X': ([
-        [L,O,L],
-        [O,L,L],
-        [L,O,L],
-        [L,O,L]
-    ]),
-    'Y': ([
-        [L,O,L],
-        [O,L,O],
-        [O,L,O],
-        [O,L,O]
-    ]),
-    'Z': ([
+    ]), 'X': ([
+        [L,H,L],
+        [H,L,L],
+        [L,H,L],
+        [L,H,L]
+    ]), 'Y': ([
+        [L,H,L],
+        [H,L,H],
+        [H,L,H],
+        [H,L,H]
+    ]), 'Z': ([
         [L,L,L],
-        [O,L,L],
-        [L,O,O],
+        [H,L,L],
+        [L,H,H],
         [L,L,L]
-    ]),
-    '!': ([
-        [L,O,O],
-        [L,O,O],
-        [O,O,O],
-        [L,O,O]
-    ]),
-    '?': ([
+    ]), '!': ([
+        [L,H,H],
+        [L,H,H],
+        [H,H,H],
+        [L,H,H]
+    ]), '?': ([
         [L,L,L],
-        [O,L,L],
-        [O,O,O],
-        [O,L,O]
-    ]),
-    '.': ([
-        [O,O,O],
-        [O,O,O],
-        [O,O,O],
-        [L,O,O]
-    ]),
-    ',': ([
-        [O,O,O],
-        [O,O,O],
-        [O,L,O],
-        [L,O,O]
-    ]),
-    '-': ([
+        [H,L,L],
+        [H,H,H],
+        [H,L,H]
+    ]), '.': ([
+        [H,H,H],
+        [H,H,H],
+        [H,H,H],
+        [L,H,H]
+    ]), ',': ([
+        [H,H,H],
+        [H,H,H],
+        [H,L,H],
+        [L,H,H]
+    ]), '-': ([
         [B,B,B],
         [L,L,L],
         [B,B,B],
         [B,B,B]
-    ]),
-    ' ': ([
+    ]), ' ': ([
         [B,B],
         [B,B],
         [B,B],
@@ -267,6 +226,7 @@ CHARS={
 
 
 def str_to_pixels(string):
+    """Return a mutlidimensional list of RGB values representing the message"""
     pixels = [[] for r in range(HEIGHT)]
 
     for ridx in range(HEIGHT):
@@ -282,12 +242,12 @@ def str_to_pixels(string):
 
 
 def send_message(string):
+    """Roll the string param representation across the pHAT"""
     uh.set_layout(uh.AUTO)
     uh.rotation(r=180)
     uh.brightness(b=0.2)
 
-    pixels = str_to_pixels(string)
-    pixels_width = len(pixels[0])
+    pixels = str_to_pixels(string.upper())
     for c in range(len(pixels[0]) - WIDTH):
         uh.set_pixels([r[c:c+WIDTH] for r in pixels])
         uh.show()
@@ -297,3 +257,6 @@ def send_message(string):
     uh.show()
 
 
+if __name__=='__main__':
+    message = ' '.join(sys.argv[1:])
+    send_message(message)
