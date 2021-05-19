@@ -9,6 +9,8 @@ L=(255,100,255) # RGB values for lit character pixels
 H=(0,0,0)       # RGB values character highlights
 B=(0,0,0)       # RGB values for unlit (blank) pixels
 WIDTH,HEIGHT=uh.get_shape()
+# WIDTH=8
+# HEIGHT=4
 CHAR_SPACING=2
 CHARS={
     '0': ([
