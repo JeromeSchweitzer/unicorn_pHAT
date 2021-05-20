@@ -40,6 +40,7 @@ def run(colors):
     uh.set_layout(uh.AUTO)
     uh.rotation(r=180)
     uh.brightness(b=0.2)
+    last_hour = int(time.strftime('%H'))
     
     while True:
         if GPIO.input(IP_PIN) == GPIO.HIGH:
@@ -48,7 +49,13 @@ def run(colors):
             colors = [E] * 6
         if colors[0] == E and os.system('who | grep -i pts') != 0:
             colors = get_colors()
-        t = time.strftime("%H%M%S")
+        t = time.strftime('%H%M%S')
+        if last_hour < int(t[:2]):      # Update the colors every hour
+            try:
+                colors = get_colors()
+            except:
+                pass
+
         split_time = map(lambda x:list(bin(int(x))[2:]), t)
         
         for cidx, c in enumerate(split_time):
