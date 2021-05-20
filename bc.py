@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import sys
 import os
+import subprocess
 import time
 import unicornhat as uh
+import RPi.GPIO as GPIO
 from message import send_message
 from forecast import get_week_weather_status
 
@@ -13,6 +15,7 @@ L=(255,255,255) # Normal lit color
 R=(0,0,255)     # Rain color
 B=(0,0,0)       # 'Blank' color
 E=(255,74,33)   # Error color
+IP_PIN=15
 
 
 def get_colors():
@@ -39,6 +42,8 @@ def run(colors):
     uh.brightness(b=0.2)
     
     while True:
+        if GPIO.input(IP_PIN) == GPIO.HIGH:
+            send_message(str(subprocess.check_output('hostname -I', shell=True))[2:-4])
         if colors[0] != E and os.system('who | grep -i pts') == 0:
             colors = [E] * 6
         if colors[0] == E and os.system('who | grep -i pts') != 0:
@@ -54,6 +59,8 @@ def run(colors):
 
   
 if __name__=='__main__':
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(IP_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     try:
         colors = get_colors()
     except Exception as e:
