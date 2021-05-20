@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 import sys
+import os
 import time
 import unicornhat as uh
 from message import send_message
 from forecast import get_week_weather_status
 
 
-WIDTH=8
+WIDTH=8         # Width and height must be hardcoded, uh.get_shape() returns incorrect values
 HEIGHT=4
-L=(255,255,255)
-R=(0,0,255)
-B=(0,0,0)
+L=(255,255,255) # Normal lit color
+R=(0,0,255)     # Rain color
+B=(0,0,0)       # 'Blank' color
+E=(255,74,33)   # Error color
 
 
 def get_colors():
@@ -37,6 +39,10 @@ def run(colors):
     uh.brightness(b=0.2)
     
     while True:
+        if colors[0] != E and os.system('who | grep -i pts') == 0:
+            colors = [E] * 6
+        if colors[0] == E and os.system('who | grep -i pts') != 0:
+            colors = get_colors()
         t = time.strftime("%H%M%S")
         split_time = map(lambda x:list(bin(int(x))[2:]), t)
         
@@ -52,11 +58,12 @@ if __name__=='__main__':
         colors = get_colors()
     except Exception as e:
         print(f"Error in forecast.py:\n{e}")
-        send_message('Unable to get colors.')
+        send_message(str(e))    # Very useful for debugging without internet
         colors = [L]*6
     try:
         run(colors)
-    except KeyboardInterrupt:
-        send_message('Bye')
+    except Exception as e:
+        print(f"Error in run():\n{e}")
+        #send_message('bye')
         sys.exit()
 

@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-
 import sys
 from time import sleep
 import unicornhat as uh
 
 
+WIDTH=8
+HEIGHT=4
 L=(255,100,255) # RGB values for lit character pixels
 H=(0,0,0)       # RGB values character highlights
 B=(0,0,0)       # RGB values for unlit (blank) pixels
-WIDTH,HEIGHT=uh.get_shape()
-# WIDTH=8
-# HEIGHT=4
 CHAR_SPACING=2
 CHARS={
     '0': ([
@@ -223,6 +221,11 @@ CHARS={
         [B,B],
         [B,B],
         [B,B]
+    ]), '#': ([     # The default character, used if a letter isn't in CHARS
+        [L,L,L],
+        [L,L,L],
+        [L,L,L],
+        [L,L,L]
     ]),
 }
 
@@ -234,7 +237,7 @@ def str_to_pixels(string):
     for ridx in range(HEIGHT):
         pixels[ridx].extend([B]*WIDTH)
     for char in string:
-        for ridx, row in enumerate(CHARS[char]):
+        for ridx, row in enumerate(CHARS['#'] if char not in CHARS else CHARS[char]):
             pixels[ridx].extend(row)
             pixels[ridx].extend([B]*CHAR_SPACING)
     for ridx in range(HEIGHT):
@@ -262,3 +265,4 @@ def send_message(string):
 if __name__=='__main__':
     message = ' '.join(sys.argv[1:])
     send_message(message)
+
