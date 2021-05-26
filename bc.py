@@ -46,15 +46,16 @@ def run(colors):
         if GPIO.input(IP_PIN) == GPIO.HIGH:
             send_message(str(subprocess.check_output('hostname -I', shell=True))[2:-4])
         if colors[0] != E and os.system('who | grep -i pts') == 0:
-            colors = [E] * 6
+           colors = [E] * 6
         if colors[0] == E and os.system('who | grep -i pts') != 0:
-            colors = get_colors()
+           colors = get_colors()
         t = time.strftime('%H%M%S')
         if last_hour < int(t[:2]):      # Update the colors every hour
-            try:
-                colors = get_colors()
-            except:
-                pass
+           last_hour = int(time.strftime('%H'))
+           try:
+               colors = get_colors()
+           except:
+               pass
 
         split_time = map(lambda x:list(bin(int(x))[2:]), t)
         
